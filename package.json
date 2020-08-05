@@ -1,0 +1,26 @@
+{
+  "name": "corruptionperceptionviz",
+  "version": "1.0.0",
+  "description": "Visualizing the Corruption Perception Index, made with D3.js",
+  "dependencies": {},
+  "devDependencies": {
+    "live-server": "^1.2.1",
+    "node-sass": "^4.14.1",
+    "npm-run-all": "^4.1.5"
+  },
+  "scripts": {
+    "server": "live-server",
+    "watch:sass": "node-sass static/scss/main.scss static/css/style.css -w",
+    "start": "npm-run-all --parallel server watch:sass"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rockdonald2/corruptionperceptionviz.git"
+  },
+  "author": "Lukács Zsolt",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rockdonald2/corruptionperceptionviz/issues"
+  },
+  "homepage": "https://github.com/rockdonald2/corruptionperceptionviz#readme"
+}
