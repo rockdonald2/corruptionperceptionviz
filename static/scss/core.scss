@@ -1,0 +1,31 @@
+@import url('https://fonts.googleapis.com/css2?family=Encode+Sans+Condensed:wght@300;400;500&display=swap');
+
+$emp-color: #f4d03f;
+
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+::-moz-selection {
+    background-color: rgba($emp-color, .5);
+}
+
+::selection {
+    background-color: rgba($emp-color, .5);
+}
+
+html {
+    font-size: 10px;
+}
+
+body {
+    font-family: 'Encode Sans Condensed',
+        sans-serif;
+    padding: 5rem 2.5rem;
+    background-color: #FAFAFA;
+    color: #22313F;
+}

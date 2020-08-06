@@ -1,0 +1,26 @@
+#byCountry {
+    .context {
+        &--left {
+            width: 25%;
+        }
+
+        &--right {
+            width: 75%;
+            height: 425rem;
+        }
+
+        &--heading {
+            text-align: right;
+        }
+    }
+
+    .tooltip {
+        border-top-left-radius: 15px;
+
+        &--info {
+            & p:not(:first-of-type) {
+                margin-top: .25rem;
+            }
+        }
+    }
+}

@@ -22,11 +22,12 @@
                 </p>
             </section>
 
-            <section class="context">
+            <section id="byCountry"
+                class="context">
                 <div class="context--left">
-                    <h1 class="context--heading">
+                    <h2 class="context--heading">
                         CPI<br> score<br> by country
-                    </h1>
+                    </h2>
                     <p class="context--info">
                         Drawing on 13 surveys of business-people and experts assessments, the index scores on a scale of <span
                             class="emphasize">0 (highly
@@ -43,18 +44,84 @@
                         There exists a correlation between the CPI and the countries' economy. Researchers found that <span
                             class="emphasize"> a higher CPI
                             generally results in </span> <span class="emphasize">a higher long-term economic growth</span>.
-                            Although, the index has been
+                        Although, the index has been
                         criticized on the
                         basis of its methodology, mainly because corruption is too complex to be captured by a single score, the
                         CPI is widely credited with putting the issue of corruption on the international policy agenda.
                     </p>
                 </div>
-                <div id="first"
-                    class="chart context--right">
+                <div class="chart context--right">
                     <div class="tooltip">
                         <h1 class="tooltip--heading"></h1>
                         <div class="tooltip--info"></div>
                     </div>
+                </div>
+            </section>
+
+            <section id="cpiVshdi"
+                class="context">
+                <div class="chart context--left">
+                    <div class="tooltip">
+                        <h1 class="tooltip--heading"></h1>
+                        <div class="tooltip--info"></div>
+                    </div>
+                </div>
+                <div class="context--right">
+                    <h2 class="context--heading">
+                        CPI <br> and <br> HDI
+                    </h2>
+                    <p class="context--info">
+                        Human Development Index is a composite index, which are used to rank countries into four tiers of human
+                        development. The HDI is also used as an alternative indicator of human welfare. The index takes into
+                        account three major factors: <span class="emphasize">lifespan</span>, <span
+                            class="emphasize">education</span> and <span class="emphasize">GNI</span>.
+                    </p>
+                    <p class="context--info">
+                        The chart on the left demonstrates the preferably existing connection between a <span
+                            class="emphasize">higher CPI and higher HDI</span>.
+                    </p>
+                    <p class="context--info">
+                        It is worth mentioning that <span class="emphasize">the HDI is criticized generally</span> <span
+                            class="emphasize">on the same</span>
+                        <span class="emphasize">basis as
+                            the CPI</span>. Welfare and
+                        human development is too complex to be captured by a single indicator, the underlying statistics may be
+                        faulty, and yet it is used by the United Nations to measure a country's development.
+                    </p>
+                    <p class="context--info">
+                        <span class="emphasize">The HDI uses a scale of 0 to 1</span>, where a higher number means a higher
+                        development.
+                    </p>
+                </div>
+            </section>
+
+            <section id="cpiVsdem"
+                class="context">
+                <div class="context--left">
+                    <h2 class="context--heading">
+                        System<br>Of<br>Government
+                    </h2>
+                    <p class="context--info">
+                        The connection between <span class="emphasize">CPI and the state of democracy</span> is unquestionable.
+                        Frankly, the Democracy Index is an index that intends to measure the state of democracy in 167 countries.
+                        The index categorises each country into one of four regime types: full democracy, flawed democracy, hybrid
+                        regimes and authoritarian regime.
+                    </p>
+                    <p class="context--info">
+                        As we can see on the chart on the right, with a few exceptions countries with a high Democracy Index also
+                        have a high CPI score. This obviously means that countries with <span class="emphasize">lower perceivable
+                            corrupcy also </span><span class="emphasize">tend to respect democratic values</span>, such as free
+                        and fair elections, and the
+                        security and anonymity of voters.
+                    </p>
+                    <p class="context--info">
+                        <span class="emphasize">The index scales from 0 to 100.</span> For a country to be denoted as a full
+                        democracy, it has to achieve at
+                        least a score of 80, from there every 20 scores decline means a new category.
+                    </p>
+                </div>
+                <div class="chart context--right">
+
                 </div>
             </section>
         </div>
@@ -66,9 +133,15 @@
             defer></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/crossfilter/1.3.12/crossfilter.min.js"
             defer></script>
+        <script src="https://unpkg.com/d3-simple-slider"
+            defer></script>
         <script src="static/js/viz_core.js"
             defer></script>
         <script src="static/js/viz_bycountry.js"
+            defer></script>
+        <script src="static/js/viz_cpiVshdi.js"
+            defer></script>
+        <script src="static/js/viz_cpiVsdem.js"
             defer></script>
         <script src="static/js/viz_main.js"
             defer></script>

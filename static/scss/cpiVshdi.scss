@@ -1,0 +1,24 @@
+#cpiVshdi {
+    .context {
+        &--left {
+            width: 75%;
+            height: 75rem;
+        }
+
+        &--right {
+            width: 25%;
+        }
+
+        &--heading {
+            text-align: left;
+        }
+
+        &--info {
+            text-align: right;
+        }
+    }
+
+    .tooltip {
+        max-width: 15rem;
+    }
+}

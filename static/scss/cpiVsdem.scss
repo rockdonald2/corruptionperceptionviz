@@ -1,0 +1,16 @@
+#cpiVsdem {
+    .context {
+        &--left {
+            width: 25%;
+        }
+
+        &--right {
+            width: 75%;
+            height: 90rem;
+        }
+
+        &--heading {
+            text-align: right;
+        }
+    }
+}

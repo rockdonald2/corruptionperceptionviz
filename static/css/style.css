@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Encode+Sans+Semi+Condensed:wght@300;400;500&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Encode+Sans+Condensed:wght@300;400;500&display=swap");
 *,
 *::before,
 *::after {
@@ -16,7 +16,7 @@ html {
   font-size: 10px; }
 
 body {
-  font-family: 'Encode Sans Semi Condensed', sans-serif;
+  font-family: 'Encode Sans Condensed', sans-serif;
   padding: 5rem 2.5rem;
   background-color: #FAFAFA;
   color: #22313F; }
@@ -57,19 +57,17 @@ body {
 
 .context {
   display: flex;
-  justify-content: space-between; }
+  justify-content: space-between;
+  margin-top: 5rem; }
   .context--left {
-    width: 25%; }
+    position: relative; }
   .context--right {
-    width: 75%;
-    height: 430rem;
     position: relative; }
   .context--heading {
     font-size: 3.2rem;
     margin: 0 1rem 5rem 1rem;
     font-weight: 500;
-    text-transform: uppercase;
-    text-align: right; }
+    text-transform: uppercase; }
   .context--info {
     font-size: 1.8rem;
     font-weight: 300; }
@@ -86,14 +84,51 @@ body {
   background-color: #fafafa;
   border: 2px solid;
   text-align: center;
-  transition: none; }
+  transition: none;
+  z-index: 3; }
   .tooltip--heading {
     font-size: 1.6rem;
     margin-bottom: .5rem; }
   .tooltip--info {
     font-size: 1.4rem; }
 
-#first .tooltip {
+#byCountry .context--left {
+  width: 25%; }
+
+#byCountry .context--right {
+  width: 75%;
+  height: 425rem; }
+
+#byCountry .context--heading {
+  text-align: right; }
+
+#byCountry .tooltip {
   border-top-left-radius: 15px; }
-  #first .tooltip--info p:not(:first-of-type) {
+  #byCountry .tooltip--info p:not(:first-of-type) {
     margin-top: .25rem; }
+
+#cpiVshdi .context--left {
+  width: 75%;
+  height: 75rem; }
+
+#cpiVshdi .context--right {
+  width: 25%; }
+
+#cpiVshdi .context--heading {
+  text-align: left; }
+
+#cpiVshdi .context--info {
+  text-align: right; }
+
+#cpiVshdi .tooltip {
+  max-width: 15rem; }
+
+#cpiVsdem .context--left {
+  width: 25%; }
+
+#cpiVsdem .context--right {
+  width: 75%;
+  height: 90rem; }
+
+#cpiVsdem .context--heading {
+  text-align: right; }

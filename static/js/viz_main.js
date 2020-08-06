@@ -18,7 +18,8 @@
         viz.data.codes = codesData;
         viz.data.regions = regionsData;
         viz.data.map = mapData;
-        viz.makeFilterAndDimension(viz.makeDataByCountry());
+        viz.makeFilterAndDimensionByCountry(viz.makeDataByCountry());
+        viz.makeFilterAndDimensionCpiVsDem(viz.makeDataCpiVsDem());
 
         viz.init();
     }
