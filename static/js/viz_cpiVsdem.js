@@ -29,10 +29,14 @@
 
     let activeYears = [2019];
 
-    let scaleX = d3.scaleLinear().domain([0, 100]).range([0, width]);
-    let scaleY = d3.scaleLinear().domain([0, 100]).range([height, 0]);
+    const scaleX = d3.scaleLinear().domain([0, 100]).range([0, width]);
+    const scaleY = d3.scaleLinear().domain([0, 100]).range([height, 0]);
+    const colorScale = d3.scaleOrdinal().range(['#E74C3C', '#913D88', '#F5AB35', '#1BBC9B', '#3498DB', '#336E7B']);
+    const radius = 8;
 
     viz.initcpiVsdem = function () {
+        colorScale.domain(Object.keys(viz.data.regions));
+
         const makeLegend = function () {
             
         }
@@ -101,7 +105,7 @@
                 return scaleY(d);
             }).attr('y2', function (d) {
                 return scaleY(d);
-            }).attr('stroke', '#666');
+            }).attr('stroke', '#666').attr('stroke-opacity', .75);
 
             yTicks.append('text').text(function (d) {
                 if (d == 0) return;
@@ -125,6 +129,32 @@
     }
 
     viz.updatecpiVsdem = function (data) {
+        const bubbles = svg.select('.bubbles').selectAll('.bubble').data(data, function (d) {
+            return d.code;
+        });
 
+        bubbles.enter().append('circle').attr('class', 'bubble').attr('id', function (d) {
+            return d.code;
+        }).attr('r', radius)
+        .attr('cx', width / 2)
+        .attr('cy', height / 2)
+        .merge(bubbles)
+        .on('mousemove', function (d) {
+            d3.selectAll('.bubble').transition().duration(viz.TRANS_DURATION / 4).style('opacity', .5);
+            d3.select(this).transition().duration(viz.TRANS_DURATION / 4).style('opacity', 1);
+        }).on('mouseout', function (d) {
+            d3.selectAll('.bubble').transition().duration(viz.TRANS_DURATION / 4).style('opacity', 1);
+        })
+        .transition().duration(viz.TRANS_DURATION)
+        .attr('cx', function (d) {
+            return scaleX(d.dem);
+        }).attr('cy', function (d) {
+            return scaleY(d.cpi);
+        }).attr('fill', function (d) {
+            return colorScale(d.region);
+        })
+        .style('cursor', 'pointer');
+
+        bubbles.exit().remove();
     }
 } (window.viz = window.viz || {}));
