@@ -196,6 +196,32 @@
 
         makeLegend();
         makeAxis();
+
+        const mouseArea = svg.insert('g', '.legend').attr('class', 'mouse-area').attr('transform', 'translate(' + margin.left + ', ' + (margin.top - 40) + ')')
+            .call(function (g) {
+                g.append('rect').attr('width', width).attr('height', height).attr('fill', 'transparent');
+            })
+            .call(function (g) {
+                g.append('line').attr('class', 'x-line').attr('stroke', '#ddd').attr('stroke-dasharray', '.5px').transition().duration(viz.TRANS_DURATION / 5);
+                g.append('text').attr('class', 'x-text');
+            })
+            .on('mousemove', function () {
+                const g = chartContainer.select('.mouse-area');
+
+                const mouseCoords = d3.mouse(g.node());
+
+                g.select('.x-line').attr('opacity', 1).attr('x1', mouseCoords[0]).attr('x2', mouseCoords[0])
+                    .attr('y1', height + 40).attr('y2', 0);
+                g.select('.x-text').attr('opacity', 1).text(scaleX.invert(mouseCoords[0]).toFixed(0))
+                    .attr('transform', 'translate(' + (mouseCoords[0] + 10) + ', ' + (mouseCoords[1]) + ')');
+            })
+            .on('mouseleave', function () {
+                const g = chartContainer.select('.mouse-area');
+
+                g.select('.x-line').attr('opacity', 0);
+                g.select('.x-text').attr('opacity', 0);
+            });
+
         svg.append('g').attr('class', 'circleGroup').attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
         viz.updateByCountry(viz.byCountryData.top(Infinity));
     }

@@ -6,7 +6,7 @@
 
     viz.GEOS = {};
 
-    viz.TRANS_DURATION = 1000;
+    viz.TRANS_DURATION = 750;
 
     viz.init = function () {
         viz.initByCountry();
@@ -34,8 +34,16 @@
     viz.makeFilterAndDimensionCpiVsDem = function (data) {
         viz.filter = crossfilter(data);
 
-        viz.cpiVsDemData = viz.filter.dimension(function (o) {
+        viz.cpiVsDemYearDim = viz.filter.dimension(function (o) {
             return o.year;
+        });
+
+        viz.cpiVsDemRegimeDim = viz.filter.dimension(function (o) {
+            return o.regime;
+        });
+
+        viz.cpiVsDemRegionDim = viz.filter.dimension(function (o) {
+            return o.region;
         });
     }
 
@@ -93,6 +101,13 @@
         return data;
     }
 
+    viz.decideRegime = function (score) {
+        if (score >= 80) return 'Full';
+        else if (score >= 60) return 'Flawed';
+        else if (score >= 40) return 'Hybrid';
+        else return 'Authoritarian';
+    }
+
     viz.makeDataCpiVsDem = function () {
         let data = [];
 
@@ -107,7 +122,8 @@
                     'region': viz.data.scores[c]['Region'],
                     'year': y,
                     'cpi': viz.data.scores[c]['CPI Score ' + y],
-                    'dem': viz.data.scores[c]['Dem Score ' + y]
+                    'dem': viz.data.scores[c]['Dem Score ' + y],
+                    'regime': viz.decideRegime(viz.data.scores[c]['Dem Score ' + y])
                 });
             }
         }
