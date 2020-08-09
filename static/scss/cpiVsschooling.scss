@@ -1,0 +1,28 @@
+#cpiVsschooling {
+    &.context {
+        flex-direction: column;
+    }
+
+    .context {
+        &--top {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+        }
+
+        &--bottom {
+            height: 130rem;
+            position: relative;
+        }
+
+        &--info {
+            text-align: center;
+            margin: 0 1rem;
+        }
+
+        &--heading {
+            margin: 0;
+            margin-right: 3rem;
+        }
+    }
+}

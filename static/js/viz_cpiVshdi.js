@@ -55,7 +55,7 @@
         .scaleExtent([1, 6])
         .on("zoom", zoomed);
 
-    const tooltip = chartContainer.select('.tooltip').style('border', 'none');;
+    const tooltip = chartContainer.select('.tooltip');
 
     viz.initcpiVshdi = function () {
         const makeLegend = function () {

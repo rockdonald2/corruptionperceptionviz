@@ -20,6 +20,7 @@
         viz.data.map = mapData;
         viz.makeFilterAndDimensionByCountry(viz.makeDataByCountry());
         viz.makeFilterAndDimensionCpiVsDem(viz.makeDataCpiVsDem());
+        viz.makeFilterAndDimensionCpiVsSchooling(viz.makeDataCpiVsSchooling());
 
         viz.init();
     }

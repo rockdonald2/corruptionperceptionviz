@@ -43,7 +43,21 @@
     const colorScale = d3.scaleOrdinal().range(['#E74C3C', '#913D88', '#F5AB35', '#1BBC9B', '#3498DB', '#336E7B']);
     const radius = 8;
 
-    const tooltip = chartContainer.select('.tooltip').style('border', 'none');
+    const tooltip = chartContainer.select('.tooltip');
+
+    const polynomialRegression = d3.regressionPoly()
+        .x(function (d) {
+            return d.dem;
+        })
+        .y(function (d) {
+            return d.cpi;
+        })
+        .order(3);
+    const linePolynomial = d3.line().x(function (d) {
+        return scaleX(d[0]);
+    }).y(function (d) {
+        return scaleY(d[1]);
+    });
 
     viz.initcpiVsdem = function () {
         colorScale.domain(Object.keys(viz.data.regions));
@@ -299,12 +313,12 @@
                 const g = chartContainer.select('.mouse-area');
 
                 const mouseCoords = d3.mouse(g.node());
-                
+
                 g.select('.x-line').attr('opacity', 1).attr('x1', mouseCoords[0]).attr('x2', mouseCoords[0])
                     .attr('y1', height).attr('y2', mouseCoords[1]);
                 g.select('.x-text').attr('opacity', 1).text(scaleX.invert(mouseCoords[0]).toFixed(0))
                     .attr('transform', 'translate(' + (mouseCoords[0] + 10) + ', ' + (height - 10) + ')');
-                
+
                 g.select('.y-line').attr('opacity', 1).attr('x1', 0).attr('x2', mouseCoords[0])
                     .attr('y1', mouseCoords[1]).attr('y2', mouseCoords[1]);
                 g.select('.y-text').attr('opacity', 1).text(scaleY.invert(mouseCoords[1]).toFixed(0))
@@ -319,6 +333,15 @@
                 g.select('.y-text').attr('opacity', 0);
             });
 
+        svg.append('g').attr('transform', 'translate(' + margin.left + ', ' + margin.top + ')')
+            .append('path').attr('class', 'regression').attr('fill', 'none').attr('stroke', '#f4d03f').attr('stroke-width', 10)
+            .attr('opacity', .25)
+            .on('mouseover', function () {
+                d3.select(this).attr('opacity', 1);
+            })
+            .on('mouseleave', function () {
+                d3.select(this).attr('opacity', .25);
+            });
         svg.append('g').attr('class', 'bubbles').attr('transform', 'translate(' + margin.left + ', ' + margin.top + ')');
         viz.cpiVsDemYearDim.filterFunction(viz.multivalue_filter(activeYears));
         viz.updatecpiVsdem(viz.cpiVsDemYearDim.top(Infinity));
@@ -331,7 +354,7 @@
 
         bubbles.enter().append('circle').attr('class', 'bubble').attr('id', function (d) {
                 return d.code;
-            }).attr('r', radius)
+            }).attr('r', 0)
             .attr('cx', width / 2)
             .attr('cy', height / 2)
             .attr('opacity', 1)
@@ -360,6 +383,7 @@
                 tooltip.style('left', '-9999px');
             })
             .transition().duration(viz.TRANS_DURATION)
+            .attr('r', radius)
             .attr('cx', function (d) {
                 return scaleX(d.dem);
             }).attr('cy', function (d) {
@@ -370,5 +394,17 @@
             .style('cursor', 'pointer');
 
         bubbles.exit().transition().duration(viz.TRANS_DURATION).attr('opacity', 0).remove();
+
+        if (!clickedRegime.clicked && !clickedRegion.clicked) {
+            setTimeout(function () {
+                svg.select('.regression').datum(polynomialRegression(data))
+                    .transition().duration(viz.TRANS_DURATION)
+                    .attr('d', linePolynomial);
+            }, viz.TRANS_DURATION);
+        } else {
+            svg.select('.regression')
+                .transition().duration(viz.TRANS_DURATION)
+                .attr('d', null);
+        }
     }
 }(window.viz = window.viz || {}));

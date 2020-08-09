@@ -13,14 +13,4 @@
             text-align: right;
         }
     }
-
-    .tooltip {
-        border-top-left-radius: 15px;
-
-        &--info {
-            & p:not(:first-of-type) {
-                margin-top: .25rem;
-            }
-        }
-    }
 }

@@ -15,9 +15,9 @@
     const svg = chartContainer.append('svg').attr('width', width + margin.left + margin.right).attr('height', height + margin.top + margin.bottom);
 
     const scaleX = d3.scaleLinear().domain([0, 100]).range([0, width]);
-    let scaleY;
+    const scaleY = d3.scaleOrdinal().range(d3.range(0, height, 22));
     const scaleR = d3.scaleOrdinal().domain(d3.range(2012, 2020)).range(d3.range(2, 10));
-    let colorScale;
+    const colorScale = d3.scaleOrdinal().range(['#E74C3C', '#913D88', '#F5AB35', '#1BBC9B', '#3498DB', '#336E7B']);
 
     const tooltip = chartContainer.select('.tooltip');
 
@@ -35,8 +35,8 @@
     let activeYears = [];
 
     viz.initByCountry = function () {
-        scaleY = d3.scaleOrdinal().domain(Object.keys(viz.data.scores)).range(d3.range(0, height, 22));
-        colorScale = d3.scaleOrdinal().domain(Object.keys(viz.data.regions)).range(['#E74C3C', '#913D88', '#F5AB35', '#1BBC9B', '#3498DB', '#336E7B']);
+        scaleY.domain(Object.keys(viz.data.scores));
+        colorScale.domain(Object.keys(viz.data.regions));
 
         const makeLegend = function () {
             const legendWidth = 800;
@@ -108,6 +108,8 @@
                 .attr('transform', 'translate(-9, 80)')
                 .style('alignment-baseline', 'middle');
         }
+
+        makeLegend();
 
         const makeAxis = function () {
             const xAxisTop = svg.append('g').attr('class', 'x-axis-top').attr('transform', 'translate(' + margin.left + ',' + (margin.top - 40) + ')');
@@ -194,7 +196,6 @@
             });
         }
 
-        makeLegend();
         makeAxis();
 
         const mouseArea = svg.insert('g', '.legend').attr('class', 'mouse-area').attr('transform', 'translate(' + margin.left + ', ' + (margin.top - 40) + ')')
@@ -250,15 +251,12 @@
                 chartContainer.select('text#' + d.code).style('font-weight', 500).style('opacity', 1);
 
                 tooltip.select('.tooltip--heading').html(d.year);
-                tooltip.select('.tooltip--info').html('<p>CPI Score ' + d.score + '</p><p>' + d.region + '</p>');
+                tooltip.select('.tooltip--info').html('<p>CPI Score ' + d.score + '</p>');
                 
                 const mouseCoords = d3.mouse(chartContainer.node());
 
                 tooltip.style('left', (mouseCoords[0] + 10) + 'px');
                 tooltip.style('top', (mouseCoords[1] + 10) + 'px');
-                tooltip.style('border-color', function () {
-                    return colorScale(d.region);
-                });
             })
             .on('mouseout', function (d) {
                 chartContainer.select('text#' + d.code).style('font-weight', 300).style('opacity', .5);

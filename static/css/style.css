@@ -55,10 +55,21 @@ body {
   .emphasize:hover::before {
     background-color: rgba(244, 208, 63, 0.75); }
 
+.quote {
+  padding-left: 2.5rem; }
+  .quote::after {
+    content: open-quote;
+    position: absolute;
+    top: 1rem;
+    left: 0;
+    transform: scale(3) rotate(20deg);
+    color: #ddd;
+    opacity: .75; }
+
 .context {
   display: flex;
   justify-content: space-between;
-  margin-top: 5rem; }
+  margin-top: 7.5rem; }
   .context--left {
     position: relative; }
   .context--right {
@@ -82,15 +93,17 @@ body {
   padding: 1rem;
   border-radius: 5px;
   background-color: #fafafa;
-  border: 2px solid;
   text-align: center;
   transition: none;
-  z-index: 3; }
+  z-index: 3;
+  max-width: 15rem; }
   .tooltip--heading {
     font-size: 1.6rem;
     margin-bottom: .5rem; }
   .tooltip--info {
     font-size: 1.4rem; }
+    .tooltip--info p:not(:first-of-type) {
+      margin-top: .25rem; }
 
 #byCountry .context--left {
   width: 25%; }
@@ -101,11 +114,6 @@ body {
 
 #byCountry .context--heading {
   text-align: right; }
-
-#byCountry .tooltip {
-  border-top-left-radius: 15px; }
-  #byCountry .tooltip--info p:not(:first-of-type) {
-    margin-top: .25rem; }
 
 #cpiVshdi .context--left {
   width: 75%;
@@ -120,9 +128,6 @@ body {
 #cpiVshdi .context--info {
   text-align: right; }
 
-#cpiVshdi .tooltip {
-  max-width: 15rem; }
-
 #cpiVsdem .context--left {
   width: 25%; }
 
@@ -132,3 +137,23 @@ body {
 
 #cpiVsdem .context--heading {
   text-align: right; }
+
+#cpiVsschooling.context {
+  flex-direction: column; }
+
+#cpiVsschooling .context--top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between; }
+
+#cpiVsschooling .context--bottom {
+  height: 130rem;
+  position: relative; }
+
+#cpiVsschooling .context--info {
+  text-align: center;
+  margin: 0 1rem; }
+
+#cpiVsschooling .context--heading {
+  margin: 0;
+  margin-right: 3rem; }

@@ -15,6 +15,9 @@
         viz.initcpiVshdi();
 
         viz.initcpiVsdem();
+
+        viz.cpiVsSchoolingYearDim.filter(2017);
+        viz.initcpiVsschooling(viz.cpiVsSchoolingYearDim.top(Infinity));
     }
 
     viz.multivalue_filter = function (values) {
@@ -44,6 +47,14 @@
 
         viz.cpiVsDemRegionDim = viz.filter.dimension(function (o) {
             return o.region;
+        });
+    }
+
+    viz.makeFilterAndDimensionCpiVsSchooling = function (data) {
+        viz.filter = crossfilter(data);
+
+        viz.cpiVsSchoolingYearDim = viz.filter.dimension(function (o) {
+            return o.year;
         });
     }
 
@@ -124,6 +135,28 @@
                     'cpi': viz.data.scores[c]['CPI Score ' + y],
                     'dem': viz.data.scores[c]['Dem Score ' + y],
                     'regime': viz.decideRegime(viz.data.scores[c]['Dem Score ' + y])
+                });
+            }
+        }
+
+        return data;
+    }
+
+    viz.makeDataCpiVsSchooling = function () {
+        let data = [];
+
+        for (const y of d3.range(2012, 2018)) {
+            for (const c of Object.keys(viz.data.scores)) {
+                if (viz.data.scores[c]['CPI Score ' + y] == null) continue;
+                if (viz.data.scores[c]['EDU Score ' + y] == null) continue;
+                
+                data.push({
+                    'code': c,
+                    'country': viz.data.scores[c]['Country'],
+                    'region': viz.data.scores[c]['Region'],
+                    'year': y,
+                    'cpi': viz.data.scores[c]['CPI Score ' + y],
+                    'edu': viz.data.scores[c]['EDU Score ' + y],
                 });
             }
         }

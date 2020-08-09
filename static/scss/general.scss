@@ -45,16 +45,30 @@
     }
 }
 
+.quote {
+    padding-left: 2.5rem;
+
+    &::after {
+        content: open-quote;
+        position: absolute;
+        top: 1rem;
+        left: 0;
+        transform: scale(3) rotate(20deg);
+        color: #ddd;
+        opacity: .75;
+    }
+}
+
 .context {
     display: flex;
     justify-content: space-between;
-    margin-top: 5rem;
+    margin-top: 7.5rem;
 
     &--left {
         position: relative;
     }
 
-    &--right { 
+    &--right {
         position: relative;
     }
 
@@ -88,10 +102,11 @@
     padding: 1rem;
     border-radius: 5px;
     background-color: #fafafa;
-    border: 2px solid;
     text-align: center;
     transition: none;
     z-index: 3;
+
+    max-width: 15rem;
 
     &--heading {
         font-size: 1.6rem;
@@ -100,5 +115,9 @@
 
     &--info {
         font-size: 1.4rem;
+
+        & p:not(:first-of-type) {
+            margin-top: .25rem;
+        }
     }
 }
