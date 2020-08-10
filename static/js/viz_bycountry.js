@@ -270,7 +270,8 @@
             .merge(bubbles)
             .style('cursor', 'pointer')
             .on('mousemove', function (d) {
-                chartContainer.select('text#' + d.code).style('font-weight', 700).style('opacity', 1);
+                chartContainer.select('text#' + d.code).style('font-weight', 700).attr('opacity', 1)
+                    .attr('fill', '#f4d03f');
 
                 tooltip.select('.tooltip--heading').html(d.year);
                 tooltip.select('.tooltip--info').html('<p>CPI Score ' + d.score + '</p>');
@@ -281,7 +282,8 @@
                 tooltip.style('top', (mouseCoords[1] + 10) + 'px');
             })
             .on('mouseout', function (d) {
-                chartContainer.select('text#' + d.code).style('font-weight', 300).style('opacity', .5);
+                chartContainer.select('text#' + d.code).style('font-weight', 300).attr('opacity', .5)
+                    .attr('fill', null);
                 tooltip.style('left', '-9999px');
             })
             .transition().duration(viz.TRANS_DURATION)
