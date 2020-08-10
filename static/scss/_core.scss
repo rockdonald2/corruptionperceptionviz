@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Encode+Sans+Condensed:wght@300;400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fira+Sans+Condensed:wght@300;400;500;700&display=swap');
 
 $emp-color: #f4d03f;
 
@@ -8,6 +8,11 @@ $emp-color: #f4d03f;
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+}
+
+* {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 ::-moz-selection {
@@ -23,9 +28,10 @@ html {
 }
 
 body {
-    font-family: 'Encode Sans Condensed',
+    font-family: 'Fira Sans Condensed',
         sans-serif;
-    padding: 5rem 2.5rem;
+    padding: 7.5rem 2.5rem;
     background-color: #FAFAFA;
     color: #22313F;
+    position: relative;
 }

@@ -1,6 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 
+    <script>
+        window.onbeforeunload = function () {
+            window.scrollTo(0, 0);
+        }
+    </script>
+
     <head>
         <meta charset="UTF-8">
         <title>Corruption Perceptions Index</title>
@@ -8,8 +14,20 @@
             href="static/css/style.css">
     </head>
 
-    <body>
-        <div class="container">
+    <body class="hidden">
+        <!-- betöltési overlay és animáció -->
+        <div class="overlay show">
+            <div class="spinner">
+                <div class="bounce1"></div>
+                <div class="bounce2"></div>
+                <div class="bounce3"></div>
+            </div>
+            <p>Currently fetching data...</p>
+            <p>This vizualization is optimized for min screen pixel-width of 1250px.</p>
+        </div>
+
+        <main class="container">
+            <!-- fejléc elemek -->
             <section class="heading">
                 <h1 class="heading--header">
                     Corruption Perceptions Index
@@ -22,6 +40,7 @@
                 </p>
             </section>
 
+            <!-- első ábra -->
             <section id="byCountry"
                 class="context">
                 <div class="context--left">
@@ -35,7 +54,7 @@
                     </p>
                     <p class="context--info">
                         The index takes a number of factors into account, such as <span class="emphasize">nepotism, prosecution of
-                            corrupt officials,</span> and <span class="emphasize">bribery</span>.
+                            corrupt</span><span class="emphasize"> officials, and bribery</span>.
                     </p>
                     <p class="context--info">
                         The chart on the right demonstrates the countries with the most and the least amounts of corruption.
@@ -58,6 +77,7 @@
                 </div>
             </section>
 
+            <!-- második ábra -->
             <section id="cpiVshdi"
                 class="context">
                 <div class="chart context--left">
@@ -81,10 +101,8 @@
                             class="emphasize">higher CPI and higher HDI</span>.
                     </p>
                     <p class="context--info">
-                        It is worth mentioning that <span class="emphasize">the HDI is criticized generally</span> <span
-                            class="emphasize">on the same</span>
-                        <span class="emphasize">basis as
-                            the CPI</span>. Welfare and
+                        It is worth mentioning that <span class="emphasize">the HDI is criticized generally</span>
+                        <span class="emphasize">on the same basis as the CPI</span>. Welfare and
                         human development is too complex to be captured by a single indicator, the underlying statistics may be
                         faulty, and yet it is used by the United Nations to measure a country's development.
                     </p>
@@ -95,6 +113,7 @@
                 </div>
             </section>
 
+            <!-- harmadik ábra -->
             <section id="cpiVsdem"
                 class="context">
                 <div class="context--left">
@@ -128,6 +147,7 @@
                 </div>
             </section>
 
+            <!-- negyedik ábra -->
             <section id="cpiVsschooling"
                 class="context">
                 <div class="context--top">
@@ -161,9 +181,26 @@
                     </div>
                 </div>
             </section>
-        </div>
 
+            <!-- forrásjegyzék -->
+            <footer class="footer">
+                <h1 class="footer--header">
+                    Sources
+                </h1>
+                <ul>
+                    <li class="footer--source"><a href="https://www.transparency.org/en/cpi"
+                            target="_blank">Transparency.org</a></li>
+                    <li class="footer--source"><a href="https://www.gapminder.org/data/documentation/democracy-index/"
+                            target="_blank">Gapminder.org</a></li>
+                    <li class="footer--source"><a href="http://hdr.undp.org/en/data#"
+                            target="_blank">Hdr.undp.org</a></li>
+                    <li class="footer--source"><a href="https://ourworldindata.org/grapher/mean-years-of-schooling-long-run"
+                            target="_blank">Ourworldindata.org</a></li>
+                </ul>
+            </footer>
+        </main>
 
+        <!-- könyvtárak -->
         <script src="https://d3js.org/d3.v4.min.js"
             defer></script>
         <script src="https://unpkg.com/topojson@3"
@@ -174,6 +211,8 @@
             defer></script>
         <script src="https://unpkg.com/d3-regression@1.3.4/dist/d3-regression.min.js"
             defer></script>
+
+        <!-- saját scriptek -->
         <script src="static/js/viz_core.js"
             defer></script>
         <script src="static/js/viz_bycountry.js"

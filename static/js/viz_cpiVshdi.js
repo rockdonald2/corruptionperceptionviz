@@ -1,6 +1,7 @@
 (function (viz) {
     'use strict';
 
+    /* alapvető változók */
     const chartContainer = d3.select('#cpiVshdi .chart');
     const boundingRect = chartContainer.node().getBoundingClientRect();
     const margin = {
@@ -15,18 +16,21 @@
     const svg = chartContainer.append('svg').attr('width', width + margin.left + margin.right)
         .attr('height', height).attr('transform', 'translate(0, ' + (margin.top + margin.bottom) + ')');
 
+    /* nyomon követi az aktuálisan kiválasztott adatot */
     let currentYear = 2018;
-    let data;
 
+    /* geoPath, amely átalakítja a TOPOJSON-t SVG path-té */
     const path = d3.geoPath().projection(d3.geoNaturalEarth1().center([20, 15])
         .scale(190));
 
+    /* kétváltozós chloropeth színei */
     const colors = [
         "#e8e8e8", "#e4acac", "#c85a5a",
         "#b0d5df", "#ad9ea5", "#985356",
         "#64acbe", "#627f8c", "#574249"
     ];
 
+    /* skálák */
     let scaleX = d3.scaleQuantize();
     let scaleY = d3.scaleQuantize();
     const colorScale = function (value) {
@@ -35,8 +39,10 @@
         return colors[scaleY(b) + scaleX(a) * n];
     }
 
+    /* a szín kiválasztásához van rá szükség */
     const n = Math.floor(Math.sqrt(colors.length));
 
+    /* zoomért felelős függvény, amely megnagyítja az ország és földrész patheket tartalmazó csoportokat */
     function zoomed() {
         const countries = d3.select('.countries');
         const lands = d3.select('.lands');
@@ -51,13 +57,16 @@
         lands.attr("stroke-width", 1 / transform.k);
     }
 
+    /* ez határozza meg mennyire lehet zoomolni */
     const zoom = d3.zoom()
         .scaleExtent([1, 6])
         .on("zoom", zoomed);
 
     const tooltip = chartContainer.select('.tooltip');
 
+    /* létrehozza az alapvető elemeket, világtérképet, földrészeket, jelmagyarázatot */
     viz.initcpiVshdi = function () {
+        /* jelmagyarázat */
         const makeLegend = function () {
             const legend = chartContainer.append('svg').attr('width', width + margin.left + margin.right)
                 .attr('height', margin.top).attr('transform', 'translate(0, ' + (-height) + ')')
@@ -77,17 +86,21 @@
             legend.append('line').attr('marker-end', 'url(#marker)').attr('x1', 0).attr('x2', 0)
                 .attr('y1', 72).attr('y2', 0).attr('stroke', '#666')
                 .style('stroke-width', 1.5);
-            legend.append('text').text('CPI').attr('transform', 'translate(50, 90)').style('font-size', '1.2rem');
-            legend.append('text').text('HDI').attr('transform', 'translate(-10, 20) rotate(-90)').style('font-size', '1.2rem');
-            legend.append('text').text('low').attr('transform', 'translate(-15, 72) rotate(45)');
-            legend.append('text').text('high').attr('transform', 'translate(72, -10) rotate(45)');
+            legend.append('text').text('CPI').attr('transform', 'translate(50, 90)').style('font-size', '1.2rem')
+                .attr('fill', '#666');
+            legend.append('text').text('HDI').attr('transform', 'translate(-10, 20) rotate(-90)').style('font-size', '1.2rem')
+                .attr('fill', '#666');
+            legend.append('text').text('low').attr('transform', 'translate(-15, 72) rotate(45)')
+                .attr('fill', '#666');
+            legend.append('text').text('high').attr('transform', 'translate(72, -10) rotate(45)')
+                .attr('fill', '#666');
 
             legend.append('text').text('Zoom on the map for a closer look')
                 .attr('transform', 'translate(' + (-width * 0.8) + ', ' + (margin.top - 100) + ')')
-                .style('font-size', '1.2rem');
+                .style('font-size', '1.1rem').attr('fill', '#666');
             legend.append('text').text('Hover over a country for country specific information')
                 .attr('transform', 'translate(' + (-width * 0.8) + ', ' + (margin.top - 72) + ')')
-                .style('font-size', '1.2rem');
+                .style('font-size', '1.1rem').attr('fill', '#666');
 
             const sliderTime = d3.sliderBottom()
                 .min(2012).max(2018).step(1).width(300).tickFormat(d3.format('d')).tickValues(d3.range(2012, 2019))
@@ -98,25 +111,33 @@
 
             legend.append('g').attr('transform', 'translate(' + (-width * 0.43) + ', ' + (margin.top - 105) + ')').call(sliderTime)
                 .call(function (g) {
-                    g.selectAll('text').style('font-size', '1.2rem').style('font-family', 'Encode Sans Condensed, Sans Serif');
+                    g.selectAll('text').style('font-size', '1.2rem').style('font-family', 'Fira Sans Condensed')
+                        .attr('fill', '#666');
+                })
+                .call(function (g) {
+                    g.select('.parameter-value').select('text').attr('fill', '#f4d03f').attr('font-weight', 700);
                 });
         }
 
         makeLegend();
-        data = viz.makeDataCpiVsHdi(currentYear);
 
+        /* földrészek */
         const land = svg.append('g').attr('class', 'lands')
             .selectAll('.land')
             .data(topojson.feature(viz.data.map, viz.data.map.objects.land).features)
             .enter().append('path').attr('class', 'land').attr('d', path).attr('fill', '#ddd').attr('stroke', '#fff');
 
+        /* országokat tartalmazó csoport */
         svg.append('g').attr('class', 'countries');
 
-        viz.updatecpiVshdi(data);
+        /* frissítés elkezdése */
+        viz.updatecpiVshdi(viz.makeDataCpiVsHdi(currentYear));
 
+        /* ez teszi lehetővé a zoomot, enélkül nem működne */
         svg.call(zoom);
     }
 
+    /* ez felel az országok hozzáadásáért, és a színük frissítéséért */
     viz.updatecpiVshdi = function (data) {
         scaleX.domain(d3.extent(data, function (m) {
             return m.cpi;
@@ -165,10 +186,11 @@
                 tooltip.style('left', '-9999px');
             })
             .transition().duration(viz.TRANS_DURATION)
+            .attr('opacity', 1)
             .attr('fill', function (d) {
                 return colorScale([d.cpi, d.hdi]);
             });
 
-        countries.exit().remove();
+        countries.exit().transition().duration(viz.TRANS_DURATION).attr('opacity', 0).remove();
     }
 }(window.viz = window.viz || {}));

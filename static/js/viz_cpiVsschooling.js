@@ -1,6 +1,7 @@
 (function (viz) {
     'use strict';
 
+    /* alapvető változók */
     const chartContainer = d3.select('#cpiVsschooling .chart');
     const boundingRect = chartContainer.node().getBoundingClientRect();
     const margin = {
@@ -13,6 +14,7 @@
     const width = boundingRect.width + margin.left + margin.right;
     const height = boundingRect.height + margin.top + margin.bottom;
 
+    /* nyomon követi, hogy a felhasználó épp melyik évet választotta ki */
     let clickedYears = {
         2012: false,
         2013: false,
@@ -23,22 +25,25 @@
     };
     let activeYears = [2017];
 
+    /* az egyenkénti ábrák méreteit meghatározó objektum */
     const individualPlotSizes = {
         'width': 540,
         'height': 300,
         'margin': {
-            'top': 15,
+            'top': 40,
             'left': 30,
             'right': 30,
-            'bottom': 75
+            'bottom': 50
         }
     };
 
+    /* ez fogja tartalmazni az egyenkénti ábrákkal kapcsolatos dolgokat: skálák-dom elemek */
     const individualPlots = {};
 
+    /* skálák, nem ezeket, hanem ezek másolatait fogjuk használni */
     const scaleCPI = d3.scaleLinear().domain([0, 100]).range([individualPlotSizes.height, 0]);
     const scaleEDU = d3.scaleLinear().range([individualPlotSizes.height, 0]);
-    const scaleX = d3.scaleBand().range([0, individualPlotSizes.width]).padding(0.2);
+    const scaleX = d3.scaleBand().rangeRound([0, individualPlotSizes.width]).padding(0.2);
     const colors = {
         'EDU': '#86E2D5',
         'CPI': '#F4D03F'
@@ -46,6 +51,7 @@
 
     const tooltip = chartContainer.select('.tooltip');
 
+    /* csoportosítja az adatokat régió szerint */
     const sumData = function (data) {
         let summed = {}
 
@@ -58,13 +64,14 @@
         return summed;
     }
 
+    /* tooltip kezelési függvények */
     const handleMouseEnter = function (node, data) {
         tooltip.select('.tooltip--heading').html(data.country);
         tooltip.select('.tooltip--info').html(
             '<p>CPI Score ' + data.cpi + '</p><p>Average years of schooling is ' + data.edu + ' years</p>'
         );
 
-        chartContainer.select('.x-ticks text#' + d3.select(node).attr('id')).attr('font-weight', 500).attr('fill', '#F4D03F');
+        chartContainer.select('.x-ticks text#' + d3.select(node).attr('id')).attr('font-weight', 700).attr('fill', '#F4D03F');
 
         const mouseCoords = d3.mouse(chartContainer.node());
 
@@ -82,9 +89,11 @@
         tooltip.style('left', '-9999px');
     }
 
+    /* létrehozza az alapvető elemeket: jelmagyarázat, egyenkénti ábrák, azok tengelyei */
     viz.initcpiVsschooling = function (data) {
         const categorized = sumData(data);
 
+        /* jelmagyarázat */
         const makeLegend = function () {
             const legendHeight = margin.top;
             const legendWidth = boundingRect.width;
@@ -93,7 +102,7 @@
             const legend = chartContainer.append('div').append('svg').attr('width', legendWidth).attr('height', legendHeight)
                 .append('g').attr('class', 'legend');
 
-            legend.append('g').attr('class', 'circleGroup').attr('transform', 'translate(' + legendWidth * 0.15 + ', ' + legendHeight * 0.75 + ')')
+            legend.append('g').attr('class', 'circleGroup').attr('transform', 'translate(' + legendWidth * 0.03 + ', ' + legendHeight * 0.75 + ')')
                 .call(function (g) {
                     g.append('circle').attr('r', legendRadius).attr('fill', colors.CPI);
                 })
@@ -102,7 +111,7 @@
                         .attr('alignment-baseline', 'middle').style('font-size', '1.2rem').attr('fill', '#666').attr('dy', '.2em');
                 });
 
-            legend.append('g').attr('class', 'circleGroup').attr('transform', 'translate(' + legendWidth * 0.25 + ', ' + legendHeight * 0.75 + ')')
+            legend.append('g').attr('class', 'circleGroup').attr('transform', 'translate(' + legendWidth * 0.13 + ', ' + legendHeight * 0.75 + ')')
                 .call(function (g) {
                     g.append('circle').attr('r', legendRadius).attr('fill', colors.EDU);
                 })
@@ -111,12 +120,16 @@
                         .attr('alignment-baseline', 'middle').style('font-size', '1.2rem').attr('fill', '#666').attr('dy', '.2em');
                 });
 
+            legend.append('text').attr('x', legendWidth * 0.81).text('Click on year labels to filter data by year')
+                .attr('y', legendHeight * 0.75).attr('alignment-baseline', 'middle').attr('dy', '.31em')
+                .attr('fill', '#666').style('font-size', '1.1rem');
+
             const yearGroups = legend.selectAll('.yearGroup').data(d3.range(2012, 2018));
 
             yearGroups.enter().append('g').attr('class', 'yearGroup')
                 .style('cursor', 'pointer')
                 .attr('transform', function (d, i) {
-                    return 'translate(' + (legendWidth * 0.45 + i * 100) + ', ' + legendHeight * 0.75 + ')';
+                    return 'translate(' + (legendWidth * 0.33 + i * 90) + ', ' + legendHeight * 0.75 + ')';
                 })
                 .call(function (g) {
                     g.append('circle').attr('r', legendRadius).attr('fill', function (d) {
@@ -135,12 +148,12 @@
                             else return '#666';
                         }).attr('dy', '.2em')
                         .attr('font-weight', function (d) {
-                            if (d === activeYears[0]) return 500;
+                            if (d === activeYears[0]) return 700;
                             else return null;
                         });
                 }).on('mousemove', function (d) {
                     d3.select(this).select('.year-circle').attr('fill', '#f4d03f');
-                    d3.select(this).select('.year-label').attr('fill', '#f4d03f').attr('font-weight', 500);
+                    d3.select(this).select('.year-label').attr('fill', '#f4d03f').attr('font-weight', 700);
                 }).on('mouseleave', function (d) {
                     if (d !== activeYears[0]) {
                         d3.select(this).select('.year-circle').attr('fill', '#ddd');
@@ -163,7 +176,7 @@
                         }
 
                         clickedYears[d] = !clickedYears[d];
-                        d3.select(this).select('.year-label').attr('fill', '#f4d03f').attr('font-weight', 500);
+                        d3.select(this).select('.year-label').attr('fill', '#f4d03f').attr('font-weight', 700);
                         d3.select(this).select('.year-circle').attr('fill', '#f4d03f');
                     }
 
@@ -182,6 +195,7 @@
 
         const individuals = chartContainer.append('div').attr('class', 'individuals');
 
+        /* egyenkénti ábrák */
         const makeIndividualPlots = function (keys) {
             const plots = individuals.selectAll('.individual').data(keys, function (d) {
                 return d;
@@ -205,6 +219,7 @@
 
         makeIndividualPlots(d3.keys(categorized));
 
+        /* tengelyek az egyenkénti ábrákhoz */
         const makeAxis = function (keys) {
             for (const i of keys) {
                 const current = individualPlots[i];
@@ -222,6 +237,15 @@
                 current['scaleX'].domain(categorized[i].map(function (d) {
                     return d.code;
                 }));
+
+                const regionLabel = plot.insert('g', '.plot').attr('class', 'region-label')
+                    .attr('transform', 'translate(' + individualPlotSizes.width / 2 + ', ' + individualPlotSizes.margin.top / 2 + ')')
+                    .style('text-anchor', 'middle').style('font-size', '1.2rem').attr('fill', '#666')
+                    .call(function (g) {
+                        g.append('text').text(function () {
+                            return viz.data.regions[i];
+                        }).attr('dx', '1.2em');
+                    });
 
                 const xAxis = plot.insert('g', '.plot').attr('class', 'x-axis')
                     .attr('transform', 'translate(' + individualPlotSizes.margin.left + ', ' + (individualPlotSizes.height + individualPlotSizes.margin.top) + ')');
@@ -257,7 +281,7 @@
                     .attr('fill', '#666').attr('opacity', .75);
 
                 const CPIAxis = plot.insert('g', '.plot').attr('class', 'cpi-axis')
-                    .attr('transform', 'translate(' + 20 + ', ' + individualPlotSizes.margin.top + ')');
+                    .attr('transform', 'translate(' + 17 + ', ' + individualPlotSizes.margin.top + ')');
                 CPIAxis.append('line').attr('x1', 0).attr('x2', 0).attr('y1', current['scaleCPI'](0))
                     .attr('y2', current['scaleCPI'](100)).attr('stroke', '#666').attr('opacity', .75);
                 CPIAxis.append('text').text('CPI').attr('transform', 'translate(-10, 40) rotate(-90)')
@@ -275,7 +299,7 @@
                     }).attr('text-anchor', 'middle').style('font-size', '1.2rem')
                     .attr('fill', '#666').attr('opacity', .75).attr('alignment-baseline', 'middle');
 
-                const EDUAxis = plot.insert('g', '.plot').attr('class', 'edu-axis').attr('transform', 'translate(' + ((individualPlotSizes.width + individualPlotSizes.margin.left) + ', 15)'));
+                const EDUAxis = plot.insert('g', '.plot').attr('class', 'edu-axis').attr('transform', 'translate(' + ((individualPlotSizes.width + individualPlotSizes.margin.left) + ', ' + individualPlotSizes.margin.top + ')'));
                 EDUAxis.append('line').attr('x1', 0).attr('x2', 0)
                     .attr('y1', current['scaleEDU'](current['scaleEDU'].domain()[0]))
                     .attr('y2', current['scaleEDU'](current['scaleEDU'].domain()[1]))
@@ -301,9 +325,11 @@
 
         makeAxis(d3.keys(categorized));
 
+        /* frissítés elindítása */
         viz.updatecpiVsschooling(categorized);
     }
 
+    /* frissítés */
     viz.updatecpiVsschooling = function (categorized) {
         for (const i of d3.keys(categorized)) {
             const current = individualPlots[i];

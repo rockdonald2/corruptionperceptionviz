@@ -18,6 +18,14 @@
         &--info {
             text-align: center;
             margin: 0 1rem;
+
+            &:first-of-type {
+                text-align: left;
+            }
+
+            &:last-of-type {
+                text-align: right;
+            }
         }
 
         &--heading {

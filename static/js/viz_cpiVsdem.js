@@ -1,6 +1,7 @@
 (function (viz) {
     'use strict';
 
+    /* alapvető változók */
     const chartContainer = d3.select('#cpiVsdem .chart');
     const boundingRect = chartContainer.node().getBoundingClientRect();
     const margin = {
@@ -16,6 +17,7 @@
     const svg = chartContainer.append('svg').attr('height', height + margin.top + margin.bottom)
         .attr('width', width + margin.left + margin.right);
 
+    /* nyomon követik, hogy melyik évet/régiót/rezsimet választotta ki a felhasználó */
     let clickedYears = {
         2012: false,
         2013: false,
@@ -38,6 +40,7 @@
         'region': null
     };
 
+    /* skálák */
     const scaleX = d3.scaleLinear().domain([0, 100]).range([0, width]);
     const scaleY = d3.scaleLinear().domain([0, 100]).range([height, 0]);
     const colorScale = d3.scaleOrdinal().range(['#E74C3C', '#913D88', '#F5AB35', '#1BBC9B', '#3498DB', '#336E7B']);
@@ -45,6 +48,7 @@
 
     const tooltip = chartContainer.select('.tooltip');
 
+    /* regressziós görbe kiszámolásáért, és hozzáadásáért felelős függvények */
     const polynomialRegression = d3.regressionPoly()
         .x(function (d) {
             return d.dem;
@@ -59,9 +63,11 @@
         return scaleY(d[1]);
     });
 
+    /* létrehozza az alapvető elemeket, jelmagyarázat-tengelyek-mousearea */
     viz.initcpiVsdem = function () {
         colorScale.domain(Object.keys(viz.data.regions));
 
+        /* jelmagyarázat */
         const makeLegend = function () {
             const legend = svg.append('g').attr('class', 'legend').attr('transform', 'translate(' + margin.left + ', 20)');
 
@@ -93,13 +99,14 @@
                     if (i % 2) return 'translate(' + (i * 100 - 100) + ', 45)';
                     else return 'translate(' + (i * 100) + ', 0)';
                 }).style('alignment-baseline', 'middle').attr('x', 15).attr('dy', '.11em').style('font-size', '1.2rem')
+                .attr('fill', '#666')
                 .style('cursor', 'pointer')
                 .on('mousemove', function (d) {
-                    d3.select(this).attr('font-weight', 600);
+                    d3.select(this).attr('font-weight', 700).attr('fill', '#f4d03f');
                 })
                 .on('mouseout', function (d) {
-                    if (clickedRegion.region == d) return d3.select(this).attr('font-weight', 600);
-                    else return d3.select(this).attr('font-weight', null);
+                    if (clickedRegion.region == d) return d3.select(this).attr('font-weight', 700).attr('fill', '#f4d03f');
+                    else return d3.select(this).attr('font-weight', null).attr('fill', '#666');
                 })
                 .on('click', function (d) {
                     if (clickedRegion.region == d) {
@@ -117,39 +124,35 @@
                     }
 
                     for (const r of Object.keys(viz.data.regions)) {
-                        if (r == 'WE/EU' && clickedRegion.region == r) legend.select('text#' + 'WE').attr('font-weight', 600);
-                        else if (r == clickedRegion.region) legend.select('text#' + r).attr('font-weight', 600);
-                        else if (r == 'WE/EU') legend.select('text#' + 'WE').attr('font-weight', null);
-                        else legend.select('text#' + r).attr('font-weight', null);
+                        if (r == 'WE/EU' && clickedRegion.region == r) legend.select('text#' + 'WE').attr('font-weight', 700);
+                        else if (r == clickedRegion.region) legend.select('text#' + r).attr('font-weight', 700);
+                        else if (r == 'WE/EU') legend.select('text#' + 'WE').attr('font-weight', null).attr('fill', '#666');
+                        else legend.select('text#' + r).attr('font-weight', null).attr('fill', '#666');
                     }
 
                     viz.updatecpiVsdem(viz.cpiVsDemYearDim.top(Infinity));
                 });
 
-            const years = legend.append('g').attr('class', 'yearGroup').selectAll('.year-label')
-                .data(d3.range(2012, 2020));
+            const yearGroups = legend.selectAll('.yearGroup').data(d3.range(2012, 2020));
 
-            years.enter().append('text')
-                .attr('class', 'year-label')
-                .attr('font-weight', function (d) {
-                    if (clickedYears[d]) return 600;
-                    else return null;
-                })
-                .text(function (d) {
-                    return d;
-                }).attr('transform', function (d, i) {
-                    return 'translate(' + (i * 75 - 5) + ', 90)';
-                }).style('font-size', '1.2rem')
+            yearGroups.enter().append('g').attr('class', 'yearGroup')
                 .style('cursor', 'pointer')
+                .attr('transform', function (d, i) {
+                    return 'translate(' + (i * 75) + ', 90)';
+                })
                 .on('mousemove', function (d) {
-                    d3.select(this).attr('font-weight', 600);
+                    d3.select(this).select('.year-label').attr('font-weight', 700).attr('fill', '#f4d03f');
+                    d3.select(this).select('.year-circle').attr('fill', '#f4d03f');
                 })
                 .on('mouseout', function (d) {
-                    if (clickedYears[d]) return d3.select(this).attr('font-weight', 600);
-                    else return d3.select(this).attr('font-weight', null);
+                    if (!clickedYears[d]) {
+                        d3.select(this).select('.year-label').attr('font-weight', null).attr('fill', '#666');
+                        d3.select(this).select('.year-circle').attr('fill', '#ddd');
+                    }
                 })
                 .on('click', function (d) {
-                    const ys = d3.selectAll('.year-label');
+                    const labels = legend.selectAll('.year-label');
+                    const circles = legend.selectAll('.year-circle')
 
                     if (activeYears.length == 1 && clickedYears[d]) {
                         return;
@@ -157,13 +160,15 @@
                         for (const y of Object.keys(clickedYears)) {
                             if (clickedYears[y]) {
                                 clickedYears[y] = !clickedYears[y];
-                                d3.select(ys._groups[0][Object.keys(clickedYears).indexOf(y)]).attr('font-weight', null);
+                                d3.select(labels._groups[0][Object.keys(clickedYears).indexOf(y)]).attr('font-weight', null)
+                                    .attr('fill', '#666');
+                                d3.select(circles._groups[0][Object.keys(clickedYears).indexOf(y)]).attr('fill', '#ddd');
                             }
-
                         }
 
                         clickedYears[d] = !clickedYears[d];
-                        d3.select(this).attr('font-weight', 600);
+                        d3.select(this).select('.year-label').attr('font-weight', 700).attr('fill', '#f4d03f');
+                        d3.select(this).select('.year-circle').attr('fill', '#f4d03f');
                     }
 
                     activeYears = Object.keys(clickedYears).filter(function (m) {
@@ -173,17 +178,42 @@
                     });
 
                     viz.cpiVsDemYearDim.filterFunction(viz.multivalue_filter(activeYears));
-
                     viz.updatecpiVsdem(viz.cpiVsDemYearDim.top(Infinity));
+                })
+                .call(function (g) {
+                    g.append('circle')
+                        .attr('r', radius).attr('fill', function (d) {
+                            if (clickedYears[d]) return '#f4d03f';
+                            else return '#ddd';
+                        })
+                        .attr('class', 'year-circle');
+                })
+                .call(function (g) {
+                    g.append('text')
+                        .attr('class', 'year-label')
+                        .attr('alignment-baseline', 'middle').style('font-size', '1.2rem').attr('fill', function (d) {
+                            if (d === activeYears[0]) return '#f4d03f';
+                            else return '#666';
+                        }).attr('dy', '.2em')
+                        .attr('font-weight', function (d) {
+                            if (d === activeYears[0]) return 700;
+                            else return null;
+                        })
+                        .text(function (d) {
+                            return d;
+                        }).style('font-size', '1.2rem')
+                        .attr('x', 20);
                 });
 
             legend.append('text').text('Click on year/region/regime labels to filter data')
                 .attr('transform', 'translate(' + (colorScale.domain().length * 100) + ', 0)')
-                .style('font-size', '1.1rem').style('alignment-baseline', 'middle').attr('dy', '.11em');
+                .style('font-size', '1.1rem').style('alignment-baseline', 'middle').attr('dy', '.11em')
+                .attr('fill', '#666');
         }
 
         makeLegend();
 
+        /* tengelyek */
         const makeAxis = function () {
             const xAxis = svg.append('g').attr('class', 'x-axis')
                 .attr('transform', 'translate(' + margin.left + ', ' + (margin.top + height) + ')');
@@ -202,12 +232,13 @@
                 });
 
             xTicks.append('text').text(function (d) {
-                if (d <= 20) return;
+                    if (d <= 20) return;
 
-                return d;
-            }).attr('transform', function (d) {
-                return 'translate(' + scaleX(d) + ', -10)';
-            }).style('text-anchor', 'middle').style('font-size', '1.2rem').style('font-weight', 500);
+                    return d;
+                }).attr('transform', function (d) {
+                    return 'translate(' + scaleX(d) + ', -10)';
+                }).style('text-anchor', 'middle').style('font-size', '1.2rem').style('font-weight', 500)
+                .attr('fill', '#666');
 
             xTicks.append('text').text(function (d) {
                     if (d == 0) {
@@ -223,6 +254,7 @@
                 .attr('id', function (d) {
                     return viz.decideRegime(d);
                 })
+                .attr('fill', '#666')
                 .attr('transform', function (d) {
                     if (d == 0) {
                         return 'translate(' + (scaleX(40) - (scaleX(40) - scaleX(0)) / 2) + ', 0)';
@@ -232,11 +264,11 @@
                 }).style('text-anchor', 'middle').style('font-size', '1.4rem').style('alignment-baseline', 'middle')
                 .style('cursor', 'pointer')
                 .on('mousemove', function (d) {
-                    d3.select(this).attr('font-weight', 600);
+                    d3.select(this).attr('font-weight', 700).attr('fill', '#f4d03f');
                 })
                 .on('mouseout', function (d) {
-                    if (clickedRegime.regime == viz.decideRegime(d)) return d3.select(this).attr('font-weight', 600);
-                    else return d3.select(this).attr('font-weight', null);
+                    if (clickedRegime.regime == viz.decideRegime(d)) return d3.select(this).attr('font-weight', 700).attr('fill', '#f4d03f');
+                    else return d3.select(this).attr('font-weight', null).attr('fill', '#666');
                 })
                 .on('click', function (d) {
                     if (clickedRegime.regime == viz.decideRegime(d)) {
@@ -254,8 +286,8 @@
                     }
 
                     for (const r of ['Authoritarian', 'Hybrid', 'Flawed', 'Full']) {
-                        if (r == clickedRegime.regime) d3.select('text#' + r).attr('font-weight', 600)
-                        else d3.select('text#' + r).attr('font-weight', null);
+                        if (r == clickedRegime.regime) d3.select('text#' + r).attr('font-weight', 700).attr('fill', '#f4d03f');
+                        else d3.select('text#' + r).attr('font-weight', null).attr('fill', '#666');
                     }
 
                     viz.updatecpiVsdem(viz.cpiVsDemYearDim.top(Infinity));
@@ -283,17 +315,20 @@
                 }).attr('stroke', '#666').attr('stroke-opacity', .75);
 
             yTicks.append('text').text(function (d) {
-                if (d == 0) return;
+                    if (d == 0) return;
 
-                return d;
-            }).attr('transform', function (d) {
-                return 'translate(-5, ' + (scaleY(d) - 10) + ')';
-            }).attr('alignment-baseline', 'middle').style('font-size', '1.2rem').style('font-weight', 500);
+                    return d;
+                }).attr('transform', function (d) {
+                    return 'translate(-5, ' + (scaleY(d) - 10) + ')';
+                }).attr('alignment-baseline', 'middle').style('font-size', '1.2rem').style('font-weight', 500)
+                .attr('fill', '#666');
 
             svg.append('text').text('CPI').style('font-size', '1.6rem')
-                .attr('transform', 'translate(30, ' + (margin.top + height) / 2 + ') rotate(-90)').style('text-anchor', 'middle');
+                .attr('transform', 'translate(30, ' + (margin.top + height) / 2 + ') rotate(-90)').style('text-anchor', 'middle')
+                .attr('fill', '#666');
             svg.append('text').text('Democracy Index').style('font-size', '1.6rem').style('text-anchor', 'middle')
-                .attr('transform', 'translate(' + (margin.left + width) / 2 + ', ' + (margin.top + height + margin.bottom / 2 + 15) + ')');
+                .attr('transform', 'translate(' + (margin.left + width) / 2 + ', ' + (margin.top + height + margin.bottom / 2 + 15) + ')')
+                .attr('fill', '#666');
         }
 
         makeAxis();
@@ -347,6 +382,7 @@
         viz.updatecpiVsdem(viz.cpiVsDemYearDim.top(Infinity));
     }
 
+    /* frissítés */
     viz.updatecpiVsdem = function (data) {
         const bubbles = svg.select('.bubbles').selectAll('.bubble').data(data, function (d) {
             return d.code;
@@ -395,15 +431,18 @@
 
         bubbles.exit().transition().duration(viz.TRANS_DURATION).attr('opacity', 0).remove();
 
+        /* csak akkor jeleníti meg a regressziós görbét, ha sem rezsim, sem régió nincs kiválasztva */
         if (!clickedRegime.clicked && !clickedRegion.clicked) {
             setTimeout(function () {
                 svg.select('.regression').datum(polynomialRegression(data))
                     .transition().duration(viz.TRANS_DURATION)
+                    .attr('opacity', .25)
                     .attr('d', linePolynomial);
             }, viz.TRANS_DURATION);
         } else {
             svg.select('.regression')
                 .transition().duration(viz.TRANS_DURATION)
+                .attr('opacity', 0)
                 .attr('d', null);
         }
     }

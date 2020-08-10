@@ -14,6 +14,7 @@
             return console.warn(error);
         }
 
+        /* adatok lementése és dimenziók létrehozása */
         viz.data.scores = combinedData;
         viz.data.codes = codesData;
         viz.data.regions = regionsData;
@@ -22,7 +23,13 @@
         viz.makeFilterAndDimensionCpiVsDem(viz.makeDataCpiVsDem());
         viz.makeFilterAndDimensionCpiVsSchooling(viz.makeDataCpiVsSchooling());
 
-        viz.init();
+        /* az ábralétrehozási folyamat elindítása */
+        setTimeout(function () {
+            viz.init();
+
+            d3.select('body').attr('class', '');
+            d3.select('.overlay').attr('class', 'overlay');
+        }, viz.TRANS_DURATION);
     }
 
 }(window.viz = window.viz || {}));

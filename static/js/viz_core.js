@@ -4,10 +4,13 @@
     /* adattároló */
     viz.data = {};
 
+    /* adattároló, amely hozzárendeli országnév alapján a TopoJSON shape-t az adathoz */
     viz.GEOS = {};
 
+    /* animációhossz ms-ben */
     viz.TRANS_DURATION = 750;
 
+    /* ez indítja el az ábralétrehozási folyamatokat */
     viz.init = function () {
         viz.initByCountry();
 
@@ -20,12 +23,14 @@
         viz.initcpiVsschooling(viz.cpiVsSchoolingYearDim.top(Infinity));
     }
 
+    /* lehetővé teszi, hogy crossfilter-rel több év/régió/rezsim szerint szűrjük az adatainkat */
     viz.multivalue_filter = function (values) {
         return function (v) {
             return values.indexOf(v) !== -1;
         };
     }
 
+    /* első ábra adatainak létrehozása */
     viz.makeFilterAndDimensionByCountry = function (data) {
         viz.filter = crossfilter(data);
 
@@ -34,6 +39,7 @@
         });
     }
 
+    /* harmadik ábra adatainak létrehozása */
     viz.makeFilterAndDimensionCpiVsDem = function (data) {
         viz.filter = crossfilter(data);
 
@@ -50,6 +56,7 @@
         });
     }
 
+    /* utolsó ábra adatainak létrehozása */
     viz.makeFilterAndDimensionCpiVsSchooling = function (data) {
         viz.filter = crossfilter(data);
 
@@ -78,6 +85,7 @@
         return data;
     }
 
+    /* hozzárendeli a shape-t az országadathoz, országnév szerint */
     viz.associateCountryToGeo = function () {
         const mapFeatures = topojson.feature(viz.data.map, viz.data.map.objects.countries).features;
 
@@ -90,6 +98,7 @@
         return data;
     }
 
+    /* második ábra adatainak létrehozása, bevesz egy aktuális évet és az alapján választja ki a kombináltból az adatokat */
     viz.makeDataCpiVsHdi = function (year) {
         let data = [];
 
@@ -112,6 +121,7 @@
         return data;
     }
 
+    /* segítő függvény, hogy eldöntsük Democracy Index pontszám alapján milyen rezsimbe esik az ország */
     viz.decideRegime = function (score) {
         if (score >= 80) return 'Full';
         else if (score >= 60) return 'Flawed';
@@ -124,7 +134,7 @@
 
         for (const y of d3.range(2012, 2020)) {
             for (const c of Object.keys(viz.data.scores)) {
-                if (viz.data.scores[c]['CPI Score ' + y] == null) continue; 
+                if (viz.data.scores[c]['CPI Score ' + y] == null) continue;
                 if (viz.data.scores[c]['Dem Score ' + y] == null) continue;
 
                 data.push({
@@ -149,7 +159,7 @@
             for (const c of Object.keys(viz.data.scores)) {
                 if (viz.data.scores[c]['CPI Score ' + y] == null) continue;
                 if (viz.data.scores[c]['EDU Score ' + y] == null) continue;
-                
+
                 data.push({
                     'code': c,
                     'country': viz.data.scores[c]['Country'],
@@ -163,4 +173,4 @@
 
         return data;
     }
-} (window.viz = window.viz || {}));
+}(window.viz = window.viz || {}));
