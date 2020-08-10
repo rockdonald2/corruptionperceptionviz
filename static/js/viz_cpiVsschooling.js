@@ -164,6 +164,7 @@
                     const labels = legend.selectAll('.year-label');
 
                     if (activeYears.length == 1 && clickedYears[d]) {
+                        window.alert('You must select a single year to filter.');
                         return;
                     } else {
                         for (const y of Object.keys(clickedYears)) {

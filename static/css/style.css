@@ -26,6 +26,9 @@ body {
   color: #22313F;
   position: relative; }
 
+text {
+  font-family: 'Fira Sans Condensed', sans-serif !important; }
+
 .container {
   width: 120rem;
   margin: 0 auto; }

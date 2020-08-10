@@ -338,7 +338,7 @@
                             .attr('dy', '-.5em')
                             .attr('x', -10)
                             .style('font-size', '1.2rem');
-                    })
+                    });
             }
 
             for (const c of Object.keys(viz.data.scores)) {
